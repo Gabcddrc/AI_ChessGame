@@ -85,7 +85,7 @@ class Queen(ChessPiece):
 
 
 class Rook(ChessPiece):
-    def get_new_posssible_pos(self, board):
+    def get_new_possible_pos(self, board):
         new_pos = []
 
         self.validate_continuous_move([0, 1], board, new_pos)
@@ -109,7 +109,7 @@ class Bishop(ChessPiece):
         return new_pos
 
     def string_representation(self):
-        return "R"
+        return "B"
 
 
 class Knight(ChessPiece):
@@ -127,22 +127,68 @@ class Knight(ChessPiece):
 
         return new_pos
 
-
-def initialize_game():
-    board = [[ChessPiece(Side.NEUTRAL, None)
-              for _ in range(8)] for _ in range(8)]
-    board[0][0] = Queen(Side.WHITE, Pos(0, 0))
-    board[0][1] = King(Side.BLACK, Pos(0, 1))
-    print([(pos.x, pos.y) for pos in board[0][0].get_new_possible_pos(board)])
-    print_board(board)
+    def string_representation(self):
+        return "K"
 
 
-def print_board(board):
-    print("\n".join(
-        ["|".join([piece.string_representation() for piece in row])
-            for row in board]))
+class Pawn(ChessPiece):
+    def __init__(self, side: Side, pos: Pos):
+        super().__init__(side, pos)
+        self.moved = False
+        self.en_passant_possible = False
+        self.multiplier = -1 if self.side == Side.BLACK else 1
 
-# TODO: Enpeseant, castling
+    def get_new_possible_pos(self, board):
+        new_pos = []
+
+        if self.validate_move([self.multiplier*1, 0], board, new_pos) \
+                and not self.moved:
+            self.validate_move([self.multiplier*2, 0], board, new_pos)
+        else:
+            self.first_move = False
+
+        self.validate_capture([self.multiplier*1, 1], board, new_pos)
+        self.validate_capture([self.multiplier*1, -1], board, new_pos)
+        return new_pos
+
+    def validate_move(self, move, board, new_positions):
+        new_pos = Pos(self.pos.x + move[0], self.pos.y + move[1])
+
+        if self.validate_next_pos(new_pos, board) \
+                and board[new_pos.x][new_pos.y].side == Side.NEUTRAL:
+            new_positions.append(new_pos)
+            return True
+        return False
+
+    def validate_capture(self, move, board, new_positions):
+        new_pos = Pos(self.pos.x + move[0], self.pos.y + move[1])
+        if self.validate_next_pos(new_pos, board) \
+                and board[new_pos.x][new_pos.y].side != self.side \
+                and board[new_pos.x][new_pos.y].side != Side.NEUTRAL:
+            new_positions.append(new_pos)
+
+    def en_passant(self, board):
+        left, right = False, False
+        if self.pos.x > 0 \
+                and isinstance(board[self.pos.x-1][self.pox.y], Pawn) \
+                and self.validate_next_pos(
+                    Pos(self.pos.x-1, self.pos.y+self.multiplier*1), board) \
+                and board[self.pos.x-1][self.pox.y+self.multiplier*1].side \
+                == Side.NEUTRAL:
+            left = True
+
+        if self.pos.x < 7 \
+                and isinstance(board[self.pos.x+1][self.pox.y], Pawn) \
+                and self.validate_next_pos(
+                    Pos(self.pos.x-1, self.pos.y+self.multiplier*1), board) \
+                and board[self.pos.x-1][self.pox.y+self.multiplier*1].side \
+                == Side.NEUTRAL:
+            right = True
+
+        return left, right
+
+    def string_representation(self):
+        return "P"
 
 
-initialize_game()
+# TODO:  castling
