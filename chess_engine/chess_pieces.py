@@ -128,7 +128,7 @@ class Knight(ChessPiece):
         return new_pos
 
     def string_representation(self):
-        return "K"
+        return "N"
 
 
 class Pawn(ChessPiece):
@@ -136,14 +136,14 @@ class Pawn(ChessPiece):
         super().__init__(side, pos)
         self.moved = False
         self.en_passant_possible = False
-        self.multiplier = -1 if self.side == Side.BLACK else 1
+        self.multiplier = -1 if self.side == Side.WHITE else 1
 
     def get_new_possible_pos(self, board):
         new_pos = []
 
-        if self.validate_move([self.multiplier*1, 0], board, new_pos) \
+        if self.validate_move_pawn([self.multiplier*1, 0], board, new_pos) \
                 and not self.moved:
-            self.validate_move([self.multiplier*2, 0], board, new_pos)
+            self.validate_move_pawn([self.multiplier*2, 0], board, new_pos)
         else:
             self.first_move = False
 
@@ -151,7 +151,7 @@ class Pawn(ChessPiece):
         self.validate_capture([self.multiplier*1, -1], board, new_pos)
         return new_pos
 
-    def validate_move(self, move, board, new_positions):
+    def validate_move_pawn(self, move, board, new_positions):
         new_pos = Pos(self.pos.x + move[0], self.pos.y + move[1])
 
         if self.validate_next_pos(new_pos, board) \
@@ -170,18 +170,18 @@ class Pawn(ChessPiece):
     def en_passant(self, board):
         left, right = False, False
         if self.pos.x > 0 \
-                and isinstance(board[self.pos.x-1][self.pox.y], Pawn) \
+                and isinstance(board[self.pos.x-1][self.pos.y], Pawn) \
                 and self.validate_next_pos(
                     Pos(self.pos.x-1, self.pos.y+self.multiplier*1), board) \
-                and board[self.pos.x-1][self.pox.y+self.multiplier*1].side \
+                and board[self.pos.x-1][self.pos.y+self.multiplier*1].side \
                 == Side.NEUTRAL:
             left = True
 
         if self.pos.x < 7 \
-                and isinstance(board[self.pos.x+1][self.pox.y], Pawn) \
+                and isinstance(board[self.pos.x+1][self.pos.y], Pawn) \
                 and self.validate_next_pos(
                     Pos(self.pos.x-1, self.pos.y+self.multiplier*1), board) \
-                and board[self.pos.x-1][self.pox.y+self.multiplier*1].side \
+                and board[self.pos.x-1][self.pos.y+self.multiplier*1].side \
                 == Side.NEUTRAL:
             right = True
 
