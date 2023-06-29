@@ -72,7 +72,7 @@ def perform_move(move, board):
         else:
             board[to.x][to.y].en_passant_possible = False
 
-    print(f'({curr.x}, {curr.y}) -> ({to.x}, {to.y})')
+    print(f'{curr.string_representation()} -> {to.string_representation()}')
 
 def make_move(side, board):
     moves = get_avaliable_moves(side, board)
