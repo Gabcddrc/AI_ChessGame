@@ -6,12 +6,18 @@ class Side(Enum):
     BLACK = 1
     NEUTRAL = 2
 
+class Move(Enum):
+    NORMAL = 0
+    ENPASSANT = 1
+
 
 class Pos:
-    def __init__(self, x, y):
+    def __init__(self, x, y, move = Move.NORMAL):
         self.x = x
         self.y = y
-
+        self.move = move
+    def string_representation(self):
+        return f'{chr(self.y+97)}{self.x+1}'
 
 class ChessPiece:
     def __init__(self, side: Side, pos: Pos):
@@ -136,7 +142,7 @@ class Pawn(ChessPiece):
         super().__init__(side, pos)
         self.moved = False
         self.en_passant_possible = False
-        self.multiplier = -1 if self.side == Side.WHITE else 1
+        self.multiplier = 1 if self.side == Side.WHITE else -1
 
     def get_new_possible_pos(self, board):
         new_pos = []
@@ -149,6 +155,7 @@ class Pawn(ChessPiece):
 
         self.validate_capture([self.multiplier*1, 1], board, new_pos)
         self.validate_capture([self.multiplier*1, -1], board, new_pos)
+        self.en_passant(board, new_pos)
         return new_pos
 
     def validate_move_pawn(self, move, board, new_positions):
@@ -167,25 +174,26 @@ class Pawn(ChessPiece):
                 and board[new_pos.x][new_pos.y].side != Side.NEUTRAL:
             new_positions.append(new_pos)
 
-    def en_passant(self, board):
+    def en_passant(self, board, new_positions):
         left, right = False, False
-        if self.pos.x > 0 \
-                and isinstance(board[self.pos.x-1][self.pos.y], Pawn) \
+        if self.pos.y > 0 \
+                and isinstance(board[self.pos.x][self.pos.y-1], Pawn) \
+                and board[self.pos.x][self.pos.y-1].en_passant_possible \
                 and self.validate_next_pos(
-                    Pos(self.pos.x-1, self.pos.y+self.multiplier*1), board) \
-                and board[self.pos.x-1][self.pos.y+self.multiplier*1].side \
+                    Pos(self.pos.x +self.multiplier*1, self.pos.y-1), board) \
+                and board[self.pos.x +self.multiplier*1][self.pos.y-1].side \
                 == Side.NEUTRAL:
-            left = True
+            new_positions.append(Pos(self.pos.x +self.multiplier*1, self.pos.y-1, Move.ENPASSANT))
 
-        if self.pos.x < 7 \
-                and isinstance(board[self.pos.x+1][self.pos.y], Pawn) \
+        if self.pos.y < 7 \
+                and isinstance(board[self.pos.x][self.pos.y+1], Pawn) \
+                and board[self.pos.x][self.pos.y+1].en_passant_possible \
                 and self.validate_next_pos(
-                    Pos(self.pos.x-1, self.pos.y+self.multiplier*1), board) \
-                and board[self.pos.x-1][self.pos.y+self.multiplier*1].side \
+                    Pos(self.pos.x+self.multiplier*1, self.pos.y + 1), board) \
+                and board[self.pos.x+self.multiplier*1][self.pos.y + 1].side \
                 == Side.NEUTRAL:
-            right = True
+            new_positions.append(Pos(self.pos.x+self.multiplier*1, self.pos.y + 1, Move.ENPASSANT))
 
-        return left, right
 
     def string_representation(self):
         return "P"
