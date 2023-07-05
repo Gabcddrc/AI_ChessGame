@@ -1,0 +1,4 @@
+pyrightconfig.json
+.vscode
+.venv
+.DS_Store
