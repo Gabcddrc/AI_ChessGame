@@ -14,7 +14,7 @@ class Side(Enum):
 class Move(Enum):
     NORMAL = 0
     ENPASSANT = 1
-
+    CASTLING = 2
 
 class Pos:
     def __init__(self, x, y, move = Move.NORMAL):
@@ -30,6 +30,7 @@ class ChessPiece:
         self.side = side
         self.pos = pos
         self.colour = colours.BLACK
+        self.moved = False
 
         match side:
             case side.WHITE:
@@ -80,9 +81,28 @@ class King(ChessPiece):
         self.validate_move([-1, -1], board, new_pos)
         self.validate_move([+1, -1], board, new_pos)
         self.validate_move([-1, +1], board, new_pos)
+        
+        self.validate_castling(board, new_pos)
 
         return new_pos
+    
+    def validate_castling(self, board, new_pos):
+        if not self.moved:
+            left, right = self.check_castling_clearance(board)
+            if left and board[self.pos.x][0].string_representation() == "R" and not board[self.pos.x][0].moved:
+                new_pos.append(Pos(self.pos.x, 2, Move.CASTLING))
+            if right and board[self.pos.x][7].string_representation() == "R" and not board[self.pos.x][7].moved:
+                new_pos.append(Pos(self.pos.x, 6, Move.CASTLING))
 
+    def check_castling_clearance(self, board):
+        left, right = True, True
+        for i in range(1, 3):
+            if board[self.pos.x][i].side != Side.NEUTRAL:
+                left = False
+            if  board[self.pos.x][7-i].side != Side.NEUTRAL:
+                right = False
+        return left, right
+            
     def string_representation(self):
         return "K"
 
@@ -156,7 +176,6 @@ class Knight(ChessPiece):
 class Pawn(ChessPiece):
     def __init__(self, side: Side, pos: Pos):
         super().__init__(side, pos)
-        self.moved = False
         self.en_passant_possible = False
         self.multiplier = 1 if self.side == Side.WHITE else -1
 

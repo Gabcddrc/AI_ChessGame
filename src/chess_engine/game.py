@@ -56,7 +56,7 @@ def print_moves(moves):
         p, curr, next = moves[i]
         print(f'{i} : {curr.string_representation()} -> {next.string_representation()}', end = "    ")
 
-def handle_pawn(curr, to, board):
+def handle_en_passant(curr, to, board):
     if to.move == Move.ENPASSANT:
         board[curr.x][to.y] =\
             ChessPiece(Side.NEUTRAL, Pos(curr.x, to.y))
@@ -72,10 +72,27 @@ def perform_move(move, board):
     board[curr.x][curr.y], board[to.x][to.y] =\
         ChessPiece(Side.NEUTRAL, Pos(curr.x, curr.y)), board[curr.x][curr.y]
 
-    if isinstance(board[to.x][to.y] , Pawn):
-        handle_pawn(curr, to, board)
+    if board[to.x][to.y].string_representation == "P":
+        handle_en_passant(curr, to, board)
+        
+    if to.move == Move.CASTLING:
+        perform_castling(to, board)
+    
+    board[to.x][to.y].moved = True
 
     print(f'{curr.string_representation()} -> {to.string_representation()}')
+
+def perform_castling(to, board):
+    if to.y == 2:
+        board[to.x][0], board[to.x][3] = board[to.x][3], board[to.x][0]
+        board[to.x][3].pos = Pos(to.x, 3)
+        board[to.x][0].pos = Pos(to.x, 0)
+        board[to.x][3].moved = True
+    if to.y == 6:
+        board[to.x][7], board[to.x][5] = board[to.x][5], board[to.x][7]
+        board[to.x][5].pos = Pos(to.x, 5)
+        board[to.x][7].pos = Pos(to.x, 7)
+        board[to.x][5].moved = True
 
 def make_move(side, board):
     moves = get_avaliable_moves(side, board)
