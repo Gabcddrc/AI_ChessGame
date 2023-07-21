@@ -3,9 +3,9 @@
 require python3
 
 ## User can play chess through the Command line by running:
-'''
+```
 python3 src/main.py
-'''
+```
 
 
 ## Demo Chess Game
