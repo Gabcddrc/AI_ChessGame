@@ -232,6 +232,3 @@ class Pawn(ChessPiece):
 
     def string_representation(self):
         return "P"
-
-
-# TODO:  castling
