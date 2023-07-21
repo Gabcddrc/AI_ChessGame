@@ -1,5 +1,6 @@
 import copy
-from chess_engine.chess_pieces import ChessPiece, Side, Move, Pos
+from shutil import move
+from chess_engine.chess_pieces import Bishop, ChessPiece, Queen, Rook, Knight, Side, Move, Pos
 
 def get_all_moves(side: Side, board : list[list]):
     moves = []
@@ -40,6 +41,25 @@ def handle_en_passant(curr, to, board):
         board[to.x][to.y].en_passant_possible = True
     else:
         board[to.x][to.y].en_passant_possible = False
+        
+def handle_promotion(to : Pos, board: list[list]):
+    print("Please indicate the piece you want to promote to")
+    piece = input()
+    side = board[to.x][to.y].side
+    
+    match piece:
+        case "Q":
+            board[to.x][to.y] = Queen(side, to)
+        case "R":
+            board[to.x][to.y] = Rook(side, to)
+        case "B":
+            board[to.x][to.y] = Bishop(side, to)
+        case "N":
+            board[to.x][to.y] = Knight(side, to)
+        case other:
+            print(f'Invalid Piece: {other}')
+            handle_promotion(to, board)
+    
 
 def perform_move(move, board):
     _, curr, to = move
@@ -48,7 +68,14 @@ def perform_move(move, board):
         ChessPiece(Side.NEUTRAL, Pos(curr.x, curr.y)), board[curr.x][curr.y]
 
     if board[to.x][to.y].string_representation == "P":
-        handle_en_passant(curr, to, board)
+        handle_en_passant(curr, to, board)       
+        if board[to.x][to.y].side == Side.WHITE:
+            if to.x == 7:
+                handle_promotion(to, board)
+        else:
+            if to.x == 0:
+                handle_promotion(to, board)
+            
         
     if to.move == Move.CASTLING:
         perform_castling(to, board)
@@ -89,21 +116,19 @@ def make_move(side, board):
         return False
     
     print_moves(moves)
-    count  = 0
     side_str = "White Side" if side == Side.WHITE else "Black Side"
 
     move_index = "not selected"
     while True:
-        if count > 0:
-            print("\n invalid input, please select a move:")
-        else:
-            print(f"\n ({side_str}) Pick your move:")
+        print(f"\n ({side_str}) Pick your move:")
+        
         move_index = input()
-        if move_index.isdigit():
+        if move_index.isdigit() and int(move_index) < len(moves):
             perform_move(moves[int(move_index)], board)
             print_moves(moves)
             break
-        count += 1
+        
+        print(f'\n invalid input: {move_index}')
     
     return True
 
