@@ -12,4 +12,6 @@ python3 src/main.py
 ### Demo Game
 https://github.com/Gabcddrc/AI_ChessGame/assets/36075806/d5b0426f-ddb9-4180-b308-fffa541f238f
 
+## AI Interface
+
 
