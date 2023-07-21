@@ -11,8 +11,10 @@ if __name__ == '__main__':
         print_board(board)
         if end:
             print("Check Mate! Black Wins")
+            break
         
         end = not make_move(Side.BLACK, board)
         print_board(board)
         if end:
             print("Check Mate! White Wins")
+            break
