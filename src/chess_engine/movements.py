@@ -14,7 +14,7 @@ def get_all_moves(side: Side, board : list[list]):
                             board[i][j].pos,
                             new_pos]
                     moves.append(move)
-                        
+
     return moves
 
 def get_valid_moves(side: Side, board: list[list]):
@@ -23,14 +23,17 @@ def get_valid_moves(side: Side, board: list[list]):
     for move in get_all_moves(side, board):
         if not move_cause_check(move, side, board):
             moves.append(move)
-        
+
     return moves
 
-def print_moves(moves):
+def print_moves(moves) -> str:
     n = len(moves)
+    moves_string = ""
     for i in range(n):
         p, curr, next = moves[i]
-        print(f'{i} : {curr.string_representation()} -> {next.string_representation()}', end = "    ")
+        moves_string += f'{i} : {curr.string_representation()} -> {next.string_representation()}    '
+    print(moves_string)
+    return moves_string
 
 def handle_en_passant(curr, to, board):
     if to.move == Move.ENPASSANT:
@@ -41,12 +44,12 @@ def handle_en_passant(curr, to, board):
         board[to.x][to.y].en_passant_possible = True
     else:
         board[to.x][to.y].en_passant_possible = False
-        
+
 def handle_promotion(to : Pos, board: list[list]):
     print("Please indicate the piece you want to promote to")
     piece = input()
     side = board[to.x][to.y].side
-    
+
     match piece:
         case "Q":
             board[to.x][to.y] = Queen(side, to)
@@ -59,7 +62,7 @@ def handle_promotion(to : Pos, board: list[list]):
         case other:
             print(f'Invalid Piece: {other}')
             handle_promotion(to, board)
-    
+
 
 def perform_move(move, board):
     _, curr, to = move
@@ -68,18 +71,18 @@ def perform_move(move, board):
         ChessPiece(Side.NEUTRAL, Pos(curr.x, curr.y)), board[curr.x][curr.y]
 
     if board[to.x][to.y].string_representation == "P":
-        handle_en_passant(curr, to, board)       
+        handle_en_passant(curr, to, board)
         if board[to.x][to.y].side == Side.WHITE:
             if to.x == 7:
                 handle_promotion(to, board)
         else:
             if to.x == 0:
                 handle_promotion(to, board)
-            
-        
+
+
     if to.move == Move.CASTLING:
         perform_castling(to, board)
-    
+
     board[to.x][to.y].moved = True
 
 def print_move(move : list):
@@ -101,34 +104,46 @@ def move_cause_check(move, side, board):
     board_copy = copy.deepcopy(board)
     opposite_side = Side.WHITE if side == Side.BLACK else Side.BLACK
     perform_move(move, board_copy)
-    
+
     moves = get_all_moves(opposite_side, board_copy)
     for _, _, next in moves:
         if board_copy[next.x][next.y].string_representation() == "K":
             return True
-        
+
     return False
 
 def make_move(side, board):
     moves = get_valid_moves(side, board)
-    
+
     if len(moves) == 0:
         return False
-    
+
     print_moves(moves)
     side_str = "White Side" if side == Side.WHITE else "Black Side"
 
     move_index = "not selected"
     while True:
         print(f"\n ({side_str}) Pick your move:")
-        
+
         move_index = input()
         if move_index.isdigit() and int(move_index) < len(moves):
             perform_move(moves[int(move_index)], board)
-            print_moves(moves)
             break
-        
+
         print(f'\n invalid input: {move_index}')
-    
+
     return True
 
+def make_move_ai(side : Side, board : list[list], board_str:str, messages : list, prompt) -> bool:
+    moves = get_valid_moves(side, board)
+    if len(moves) == 0:
+        return False
+
+    moves_str = board_str + "\n" +print_moves(moves)
+    side_str = "White" if side == Side.WHITE else "Black"
+
+    print(f"\n ChatGPT as ({side_str}) making move")
+    move_index = prompt(messages, moves_str, side_str)
+    perform_move(moves[int(move_index)], board)
+
+    return True

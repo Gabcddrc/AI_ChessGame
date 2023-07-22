@@ -1,11 +1,13 @@
 from chess_engine.chess_pieces import ChessPiece, Side, Pos, Pawn, Rook, Knight, Bishop, \
                          Queen, King, Move
-                         
+
 def print_board(board):
-    print('\n')
-    print(("\n".join(
-        [str(8-id)+" " + " | ".join([piece.string_representation_colour() for piece in row])
-            for id, row in enumerate(reversed(board))]) + '\n  a   b   c   d   e   f   g   h'))
+    board_str = '\n' + \
+                ("\n".join(
+                    [str(8-id)+" " + " | ".join([piece.string_representation_colour() for piece in row])
+                        for id, row in enumerate(reversed(board))]) + '\n  a   b   c   d   e   f   g   h')
+    print(board_str)
+    return board_str
 
 def initialize_game():
     board = [[ChessPiece(Side.NEUTRAL, Pos(i ,j))
