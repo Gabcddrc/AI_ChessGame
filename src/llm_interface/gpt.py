@@ -11,16 +11,16 @@ def createMessage(side:str, moves : str):
             + "reply with ONLY THE NUMBER"
 
 
-def prompt(messages :list, moves: str, side: str) -> str:
+def prompt(moves: str, side: str) -> str:
     with open(os.path.dirname(__file__) +'/credential.config') as file:
         openai.api_key = json.load(file)["openai"]["api_key"]
 
-    messages.append(
+    messages = [
         {
             "role" : "user",
             "content" : createMessage(side, moves)
         }
-    )
+    ]
 
     chat = openai.ChatCompletion.create(
         model="gpt-3.5-turbo", messages=messages

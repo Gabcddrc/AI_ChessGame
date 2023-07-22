@@ -134,7 +134,7 @@ def make_move(side, board):
 
     return True
 
-def make_move_ai(side : Side, board : list[list], board_str:str, messages : list, prompt) -> bool:
+def make_move_ai(side : Side, board : list[list], board_str:str, prompt) -> bool:
     moves = get_valid_moves(side, board)
     if len(moves) == 0:
         return False
@@ -143,7 +143,7 @@ def make_move_ai(side : Side, board : list[list], board_str:str, messages : list
     side_str = "White" if side == Side.WHITE else "Black"
 
     print(f"\n ChatGPT as ({side_str}) making move")
-    move_index = prompt(messages, moves_str, side_str)
+    move_index = prompt(moves_str, side_str)
     perform_move(moves[int(move_index)], board)
 
     return True

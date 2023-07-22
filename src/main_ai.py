@@ -6,7 +6,6 @@ from llm_interface.gpt import prompt
 if __name__ == '__main__':
     board = initialize_game()
     board_str = print_board(board)
-    messages = []
 
     print("Which side you want to play?  White or Black")
     user_side_str = input()
@@ -26,7 +25,7 @@ if __name__ == '__main__':
 
 
     while True:
-        end = not make_move_ai(ai_side, board, board_str, messages, prompt)
+        end = not make_move_ai(ai_side, board, board_str, prompt)
         board_str = print_board(board)
         if end:
             print(f"Check Mate! {ai_side_str} Wins")
