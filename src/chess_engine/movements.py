@@ -1,6 +1,17 @@
 import copy
 from shutil import move
-from chess_engine.chess_pieces import Bishop, ChessPiece, Queen, Rook, Knight, Side, Move, Pos
+
+from chess_engine.chess_pieces import (
+    Bishop,
+    ChessPiece,
+    Knight,
+    Move,
+    Pos,
+    Queen,
+    Rook,
+    Side,
+)
+
 
 def get_all_moves(side: Side, board : list[list]):
     moves = []

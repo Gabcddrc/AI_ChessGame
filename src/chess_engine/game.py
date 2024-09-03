@@ -1,17 +1,18 @@
-from chess_engine.chess_pieces import ChessPiece, Side, Pos, Pawn, Rook, Knight, Bishop, \
-                         Queen, King, Move
+from src.chess_engine.chess_pieces import (
+    Bishop,
+    ChessPiece,
+    King,
+    Knight,
+    Pawn,
+    Pos,
+    Queen,
+    Rook,
+    Side,
+)
 
-def print_board(board):
-    board_str = '\n' + \
-                ("\n".join(
-                    [str(8-id)+" " + " | ".join([piece.string_representation_colour() for piece in row])
-                        for id, row in enumerate(reversed(board))]) + '\n  a   b   c   d   e   f   g   h')
-    print(board_str)
-    return board_str
 
 def initialize_game():
-    board = [[ChessPiece(Side.NEUTRAL, Pos(i ,j))
-              for j in range(8)] for i in range(8)]
+    board = [[ChessPiece(Side.NEUTRAL, Pos(i, j)) for j in range(8)] for i in range(8)]
 
     for i in range(8):
         board[1][i] = Pawn(Side.WHITE, Pos(1, i))
