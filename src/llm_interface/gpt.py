@@ -1,9 +1,10 @@
-import sys
+import json
 import os
+import sys
+import time
 
 import openai
-import json
-import time
+
 
 def createMessage(side:str, moves : str):
     return f'You are play chess as {side}, select one of the following move:' \
@@ -12,7 +13,7 @@ def createMessage(side:str, moves : str):
 
 
 def prompt(moves: str, side: str) -> str:
-    with open(os.path.dirname(__file__) +'/credential.config') as file:
+    with open(os.path.dirname(__file__) +'/test.config') as file:
         openai.api_key = json.load(file)["openai"]["api_key"]
 
     messages = [

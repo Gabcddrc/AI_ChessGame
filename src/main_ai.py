@@ -1,6 +1,6 @@
-from chess_engine.movements import make_move, make_move_ai
-from chess_engine.game import initialize_game, print_board
 from chess_engine.chess_pieces import Side
+from chess_engine.game import initialize_game, print_board
+from chess_engine.movements import make_move, make_move_ai
 from llm_interface.gpt import prompt
 
 if __name__ == '__main__':
